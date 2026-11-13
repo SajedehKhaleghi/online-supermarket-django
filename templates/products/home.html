@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}خانه | سوپر مارکت آنلاین{% endblock %}
+{% block content %}
+
+<div class="hero-banner p-5 mb-4">
+  <h1 class="mb-2">خرید آنلاین از سوپرمارکت، تحویل درب منزل</h1>
+  <p class="mb-3">تمام نیازهای روزمره‌تان را با چند کلیک سفارش دهید.</p>
+  <a href="{% url 'products:product_list' %}" class="btn btn-light fw-bold">مشاهده محصولات</a>
+</div>
+
+<h4 class="mb-3">دسته‌بندی‌ها</h4>
+<div class="d-flex flex-wrap gap-2 mb-4">
+  {% for cat in categories %}
+    <a href="{% url 'products:category_detail' cat.slug %}" class="btn btn-outline-success category-pill">{{ cat.name }}</a>
+  {% empty %}
+    <p class="text-muted">هنوز دسته‌بندی‌ای ثبت نشده است.</p>
+  {% endfor %}
+</div>
+
+{% if discounted %}
+<h4 class="mb-3">پیشنهاد شگفت‌انگیز 🔥</h4>
+<div class="row g-3 mb-5">
+  {% for product in discounted %}
+    <div class="col-6 col-md-3">
+      {% include "products/partials/product_card.html" %}
+    </div>
+  {% endfor %}
+</div>
+{% endif %}
+
+<h4 class="mb-3">جدیدترین محصولات</h4>
+<div class="row g-3">
+  {% for product in latest_products %}
+    <div class="col-6 col-md-3">
+      {% include "products/partials/product_card.html" %}
+    </div>
+  {% empty %}
+    <p class="text-muted">هنوز محصولی ثبت نشده است.</p>
+  {% endfor %}
+</div>
+
+{% endblock %}

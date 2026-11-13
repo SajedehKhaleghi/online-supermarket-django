@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}{{ category.name }}{% endblock %}
+{% block content %}
+<h3 class="mb-4">{{ category.name }}</h3>
+{% if category.description %}<p class="text-muted">{{ category.description }}</p>{% endif %}
+<div class="row g-3">
+  {% for product in page_obj %}
+    <div class="col-6 col-md-3">
+      {% include "products/partials/product_card.html" %}
+    </div>
+  {% empty %}
+    <p class="text-muted">در این دسته هنوز محصولی ثبت نشده است.</p>
+  {% endfor %}
+</div>
+{% include "partials/pagination.html" %}
+{% endblock %}

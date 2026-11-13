@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block title %}محصولات{% endblock %}
+{% block content %}
+<div class="row">
+  <div class="col-md-3 mb-4">
+    <div class="card p-3">
+      <h6 class="mb-3">فیلتر محصولات</h6>
+      <form method="get">
+        <input type="hidden" name="q" value="{{ query }}">
+        <div class="mb-3">
+          <label class="form-label">دسته‌بندی</label>
+          <select name="category" class="form-select" onchange="this.form.submit()">
+            <option value="">همه دسته‌ها</option>
+            {% for cat in categories %}
+              <option value="{{ cat.slug }}" {% if cat.slug == category_slug %}selected{% endif %}>{{ cat.name }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">حداقل قیمت</label>
+          <input type="number" name="min_price" class="form-control" value="{{ min_price }}">
+        </div>
+        <div class="mb-3">
+          <label class="form-label">حداکثر قیمت</label>
+          <input type="number" name="max_price" class="form-control" value="{{ max_price }}">
+        </div>
+        <div class="mb-3">
+          <label class="form-label">مرتب‌سازی</label>
+          <select name="sort" class="form-select" onchange="this.form.submit()">
+            <option value="">پیش‌فرض</option>
+            <option value="price_asc" {% if sort == "price_asc" %}selected{% endif %}>ارزان‌ترین</option>
+            <option value="price_desc" {% if sort == "price_desc" %}selected{% endif %}>گران‌ترین</option>
+            <option value="newest" {% if sort == "newest" %}selected{% endif %}>جدیدترین</option>
+          </select>
+        </div>
+        <button type="submit" class="btn btn-success w-100">اعمال فیلتر</button>
+      </form>
+    </div>
+  </div>
+
+  <div class="col-md-9">
+    {% if query %}<p>نتایج جستجو برای: <strong>{{ query }}</strong></p>{% endif %}
+    <div class="row g-3">
+      {% for product in page_obj %}
+        <div class="col-6 col-md-4 col-lg-3">
+          {% include "products/partials/product_card.html" %}
+        </div>
+      {% empty %}
+        <p class="text-muted">محصولی یافت نشد.</p>
+      {% endfor %}
+    </div>
+
+    {% include "partials/pagination.html" %}
+  </div>
+</div>
+{% endblock %}

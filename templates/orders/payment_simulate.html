@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}پرداخت{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-5">
+    <div class="card p-4 text-center">
+      <h4 class="mb-3">پرداخت سفارش</h4>
+      <p>سفارش #{{ order.id }}</p>
+      <h3 class="text-success mb-3">{{ payment.amount }} تومان</h3>
+
+      <div class="alert alert-warning small text-start">
+        حالت توسعه (DEBUG): اتصال به درگاه زرین‌پال برقرار نشد. این صفحه در production وجود ندارد.
+        برای ادامه‌ی تست، می‌توانید در حالت آزمایشی پرداخت را تکمیل کنید.
+        <br><small class="text-muted">جزئیات فنی: {{ error }}</small>
+      </div>
+
+      <form method="post" action="{% url 'orders:payment_simulate' order.id %}">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-success w-100">تکمیل پرداخت (حالت آزمایشی)</button>
+      </form>
+      <a href="{% url 'orders:payment' order.id %}" class="btn btn-outline-secondary w-100 mt-2">تلاش مجدد برای اتصال به درگاه واقعی</a>
+    </div>
+  </div>
+</div>
+{% endblock %}

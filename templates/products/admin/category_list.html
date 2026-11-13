@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block title %}دسته‌بندی‌ها{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h4>دسته‌بندی‌های محصولات</h4>
+  <a href="{% url 'products:admin_category_create' %}" class="btn btn-success">+ افزودن دسته‌بندی</a>
+</div>
+<table class="table table-bordered bg-white">
+  <thead><tr><th>نام</th><th>تعداد محصولات</th></tr></thead>
+  <tbody>
+  {% for cat in categories %}
+    <tr><td>{{ cat.name }}</td><td>{{ cat.products.count }}</td></tr>
+  {% empty %}
+    <tr><td colspan="2" class="text-center text-muted">دسته‌بندی‌ای ثبت نشده است.</td></tr>
+  {% endfor %}
+  </tbody>
+</table>
+<a href="{% url 'products:admin_product_list' %}" class="btn btn-outline-secondary">بازگشت به محصولات</a>
+{% endblock %}

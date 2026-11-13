@@ -1,0 +1,49 @@
+{% load static %}
+<nav class="navbar navbar-expand-lg navbar-dark bg-success sticky-top shadow-sm">
+  <div class="container">
+    <a class="navbar-brand" href="{% url 'products:home' %}">🛒 سوپر مارکت آنلاین</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMain">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navMain">
+      <form class="d-flex flex-grow-1 mx-lg-4 my-2 my-lg-0" method="get" action="{% url 'products:product_list' %}">
+        <input class="form-control" type="search" name="q" placeholder="جستجوی محصول..." value="{{ request.GET.q }}">
+        <button class="btn btn-light ms-2" type="submit">جستجو</button>
+      </form>
+      <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-2">
+        <li class="nav-item"><a class="nav-link" href="{% url 'products:product_list' %}">محصولات</a></li>
+        <li class="nav-item">
+          <a class="nav-link position-relative" href="{% url 'products:compare' %}">
+            مقایسه
+            {% if compare_count %}
+              <span class="badge bg-warning text-dark">{{ compare_count }}</span>
+            {% endif %}
+          </a>
+        </li>
+        {% if user.is_authenticated %}
+          <li class="nav-item">
+            <a class="nav-link position-relative" href="{% url 'orders:cart' %}">
+              سبد خرید
+              {% with cart_count=user.cart.total_items %}
+                {% if cart_count %}<span class="badge bg-warning text-dark">{{ cart_count }}</span>{% endif %}
+              {% endwith %}
+            </a>
+          </li>
+          {% if user.is_staff %}
+            <li class="nav-item"><a class="nav-link" href="{% url 'products:admin_product_list' %}">پنل مدیریت</a></li>
+          {% endif %}
+          <li class="nav-item"><a class="nav-link" href="{% url 'accounts:dashboard' %}">👤 {{ user.username }}</a></li>
+          <li class="nav-item">
+            <form method="post" action="{% url 'accounts:logout' %}" class="d-inline">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-sm btn-outline-light">خروج</button>
+            </form>
+          </li>
+        {% else %}
+          <li class="nav-item"><a class="nav-link" href="{% url 'accounts:login' %}">ورود</a></li>
+          <li class="nav-item"><a class="btn btn-light btn-sm ms-2" href="{% url 'accounts:register' %}">ثبت‌نام</a></li>
+        {% endif %}
+      </ul>
+    </div>
+  </div>
+</nav>

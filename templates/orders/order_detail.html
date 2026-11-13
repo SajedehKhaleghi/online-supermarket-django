@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block title %}سفارش #{{ order.id }}{% endblock %}
+{% block content %}
+<h4 class="mb-3">سفارش #{{ order.id }}</h4>
+
+<div class="card p-3 mb-4">
+  <h6>وضعیت پیگیری سفارش</h6>
+  <div class="d-flex justify-content-between text-center small">
+    {% for status_key, status_label in order.STATUS_CHOICES %}
+      {% if status_key != "cancelled" %}
+        <div class="flex-fill {% if order.status == status_key %}fw-bold text-success{% endif %}">
+          {{ status_label }}
+        </div>
+      {% endif %}
+    {% endfor %}
+  </div>
+  {% if order.status == "cancelled" %}
+    <p class="text-danger mt-2">این سفارش لغو شده است.</p>
+  {% endif %}
+</div>
+
+{% if order.status == "pending_payment" %}
+  <div class="alert alert-warning d-flex flex-wrap gap-2 align-items-center">
+    <span class="me-auto">این سفارش هنوز پرداخت نشده است و موجودی برای شما رزرو شده.</span>
+    <a href="{% url 'orders:payment' order.id %}" class="btn btn-success btn-sm">پرداخت</a>
+    <form method="post" action="{% url 'orders:order_cancel' order.id %}">
+      {% csrf_token %}
+      <button type="submit" class="btn btn-outline-danger btn-sm">لغو سفارش</button>
+    </form>
+  </div>
+{% endif %}
+
+<p><strong>آدرس تحویل:</strong> {{ order.address }}</p>
+<p><strong>بازه تحویل:</strong> {{ order.delivery_time }}</p>
+
+<table class="table bg-white">
+  <thead><tr><th>محصول</th><th>قیمت واحد</th><th>تعداد</th><th>جمع</th></tr></thead>
+  <tbody>
+  {% for item in order.items.all %}
+    <tr>
+      <td>{{ item.product_name }}</td>
+      <td>{{ item.price }} تومان</td>
+      <td>{{ item.quantity }}</td>
+      <td>{{ item.subtotal }} تومان</td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+<h5 class="text-end">جمع کل: {{ order.total_price }} تومان</h5>
+{% endblock %}

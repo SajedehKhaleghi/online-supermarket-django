@@ -1,0 +1,45 @@
+body {
+    font-family: "Vazirmatn", "Tahoma", sans-serif;
+    background-color: #f6f7f9;
+}
+.navbar-brand { font-weight: 800; }
+.product-card {
+    transition: transform .15s ease, box-shadow .15s ease;
+    border: 1px solid #eee;
+}
+.product-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 20px rgba(0,0,0,.08);
+}
+.product-card img {
+    height: 180px;
+    object-fit: cover;
+    background: #fafafa;
+}
+.badge-discount {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+}
+.price-old {
+    text-decoration: line-through;
+    color: #999;
+    font-size: .85rem;
+}
+.price-final {
+    color: #d6304a;
+    font-weight: 700;
+}
+.category-pill {
+    border-radius: 999px;
+}
+footer {
+    background: #1f2530;
+    color: #ccc;
+}
+.rating-stars { color: #f5a623; }
+.hero-banner {
+    background: linear-gradient(135deg,#2e7d32,#66bb6a);
+    color: #fff;
+    border-radius: 16px;
+}

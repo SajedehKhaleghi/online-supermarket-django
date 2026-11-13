@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}پنل کاربری{% endblock %}
+{% block content %}
+<div class="row">
+  <div class="col-md-4 mb-4">
+    <div class="card p-3">
+      <h5>👤 {{ user.username }}</h5>
+      <p class="mb-1 text-muted">شماره موبایل: {{ user.phone_number }}</p>
+      <p class="mb-1 text-muted">آدرس: {{ user.address|default:"ثبت نشده" }}</p>
+      <a href="{% url 'accounts:profile_edit' %}" class="btn btn-outline-success btn-sm mt-2">ویرایش پروفایل</a>
+    </div>
+  </div>
+  <div class="col-md-8">
+    <h5 class="mb-3">سفارش‌های اخیر</h5>
+    {% for order in orders %}
+      <div class="card p-3 mb-2 d-flex flex-row justify-content-between align-items-center">
+        <div>
+          <strong>سفارش #{{ order.id }}</strong>
+          <div class="text-muted small">{{ order.created_at|date:"Y/m/d H:i" }} — {{ order.total_price }} تومان</div>
+        </div>
+        <div>
+          <span class="badge bg-info">{{ order.get_status_display }}</span>
+          <a href="{% url 'orders:order_detail' order.id %}" class="btn btn-sm btn-outline-secondary">جزئیات</a>
+        </div>
+      </div>
+    {% empty %}
+      <p class="text-muted">هنوز سفارشی ثبت نکرده‌اید.</p>
+    {% endfor %}
+    {% if has_more %}<a href="{% url 'orders:order_list' %}" class="btn btn-outline-success btn-sm">مشاهده‌ی همه‌ی سفارش‌ها</a>{% endif %}
+  </div>
+</div>
+{% endblock %}

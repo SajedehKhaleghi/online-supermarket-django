@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}{{ product.name }}{% endblock %}
+{% block content %}
+<div class="row">
+  <div class="col-md-5 mb-4">
+    {% if product.image %}
+      <img src="{{ product.image.url }}" class="img-fluid rounded shadow-sm" alt="{{ product.name }}">
+    {% else %}
+      <img src="{% static 'img/no-image.svg' %}" class="img-fluid rounded shadow-sm" alt="{{ product.name }}">
+    {% endif %}
+  </div>
+  <div class="col-md-7">
+    <h3>{{ product.name }}</h3>
+    <p class="text-muted">{{ product.category.name }} {% if product.brand %} — برند: {{ product.brand }}{% endif %}</p>
+
+    {% if product.average_rating %}
+      <div class="rating-stars mb-2">★ {{ product.average_rating }} از ۵ ({{ product.review_count }} نظر)</div>
+    {% endif %}
+
+    <div class="mb-3">
+      {% if product.discount_percent %}
+        <span class="price-old fs-6">{{ product.price }} تومان</span><br>
+      {% endif %}
+      <span class="price-final fs-3">{{ product.final_price }} تومان</span>
+      <span class="text-muted">/ {{ product.get_unit_display }}</span>
+    </div>
+
+    <p>{{ product.description }}</p>
+
+    {% if product.features.all %}
+      <table class="table table-sm w-auto">
+        <tbody>
+        {% for f in product.features.all %}
+          <tr><th class="text-muted">{{ f.key }}</th><td>{{ f.value }}</td></tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    {% endif %}
+
+    {% if product.in_stock %}
+      <form method="post" action="{% url 'orders:cart_add' product.id %}" class="d-flex align-items-center gap-2">
+        {% csrf_token %}
+        <input type="number" name="quantity" value="1" min="1" max="{{ product.stock }}" class="form-control" style="width:90px">
+        <button type="submit" class="btn btn-success">افزودن به سبد خرید</button>
+      </form>
+      <small class="text-muted">موجودی: {{ product.stock }} {{ product.get_unit_display }}</small>
+    {% else %}
+      <button class="btn btn-secondary" disabled>ناموجود</button>
+    {% endif %}
+    <form method="post" action="{% url 'products:compare_add' product.id %}" class="d-inline">
+      {% csrf_token %}
+      <button type="submit" class="btn btn-outline-secondary mt-2">افزودن به مقایسه</button>
+    </form>
+  </div>
+</div>
+
+<hr class="my-4">
+
+<h5>نظرات و امتیازها</h5>
+<div class="mb-4">
+  {% for review in reviews %}
+    <div class="border rounded p-3 mb-2">
+      <div class="d-flex justify-content-between">
+        <strong>{{ review.user.username }}</strong>
+        <span class="rating-stars">★ {{ review.rating }}</span>
+      </div>
+      {% if review.comment %}<p class="mb-0 mt-1">{{ review.comment }}</p>{% endif %}
+      <small class="text-muted">{{ review.created_at|date:"Y/m/d" }}</small>
+    </div>
+  {% empty %}
+    <p class="text-muted">هنوز نظری ثبت نشده است.</p>
+  {% endfor %}
+</div>
+
+{% if user.is_authenticated %}
+  <div class="card p-3">
+    <h6>{% if user_review %}ویرایش نظر شما{% else %}ثبت نظر و امتیاز{% endif %}</h6>
+    <form method="post">
+      {% csrf_token %}
+      <div class="mb-2">{{ form.rating.label_tag }} {{ form.rating }}</div>
+      <div class="mb-2">{{ form.comment }}</div>
+      <button type="submit" class="btn btn-success">ثبت نظر</button>
+    </form>
+  </div>
+{% else %}
+  <p><a href="{% url 'accounts:login' %}">وارد شوید</a> تا بتوانید نظر ثبت کنید.</p>
+{% endif %}
+
+{% if related_products %}
+<hr class="my-4">
+<h5>محصولات مشابه</h5>
+<div class="row g-3">
+  {% for product in related_products %}
+    <div class="col-6 col-md-3">
+      {% include "products/partials/product_card.html" %}
+    </div>
+  {% endfor %}
+</div>
+{% endif %}
+{% endblock %}

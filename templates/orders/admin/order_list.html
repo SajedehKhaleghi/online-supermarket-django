@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}مدیریت سفارش‌ها{% endblock %}
+{% block content %}
+<h4 class="mb-3">مدیریت سفارش‌ها</h4>
+
+<form method="get" class="mb-3 d-flex gap-2">
+  <select name="status" class="form-select w-auto" onchange="this.form.submit()">
+    <option value="">همه وضعیت‌ها</option>
+    {% for key, label in status_choices %}
+      <option value="{{ key }}" {% if key == status_filter %}selected{% endif %}>{{ label }}</option>
+    {% endfor %}
+  </select>
+  <input type="search" name="q" value="{{ query }}" class="form-control w-auto" placeholder="شماره سفارش، نام‌کاربری یا موبایل">
+  <button class="btn btn-outline-secondary" type="submit">جستجو</button>
+</form>
+
+<table class="table table-bordered bg-white">
+  <thead><tr><th>#</th><th>کاربر</th><th>مبلغ</th><th>وضعیت</th><th>تاریخ ثبت</th><th></th></tr></thead>
+  <tbody>
+  {% for order in orders %}
+    <tr>
+      <td>{{ order.id }}</td>
+      <td>{{ order.user.username }}</td>
+      <td>{{ order.total_price }} تومان</td>
+      <td><span class="badge bg-info">{{ order.get_status_display }}</span></td>
+      <td>{{ order.created_at|date:"Y/m/d H:i" }}</td>
+      <td><a href="{% url 'orders:admin_order_detail' order.id %}" class="btn btn-sm btn-outline-primary">مدیریت</a></td>
+    </tr>
+  {% empty %}
+    <tr><td colspan="6" class="text-center text-muted">سفارشی ثبت نشده است.</td></tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% include "partials/pagination.html" %}
+{% endblock %}

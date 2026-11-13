@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block title %}{{ title }}{% endblock %}
+{% block content %}
+<h4 class="mb-3">{{ title }}</h4>
+<form method="post" enctype="multipart/form-data">
+  {% csrf_token %}
+  <div class="mb-3"><label class="form-label">نام دسته‌بندی</label>{{ form.name }}</div>
+  <div class="mb-3"><label class="form-label">توضیحات</label>{{ form.description }}</div>
+  <div class="mb-3"><label class="form-label">تصویر</label>{{ form.image }}</div>
+  <button type="submit" class="btn btn-success">ذخیره</button>
+  <a href="{% url 'products:admin_category_list' %}" class="btn btn-outline-secondary">انصراف</a>
+</form>
+{% endblock %}

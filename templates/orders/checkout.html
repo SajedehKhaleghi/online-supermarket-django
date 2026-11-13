@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}تسویه حساب{% endblock %}
+{% block content %}
+<div class="row">
+  <div class="col-md-7">
+    <h4 class="mb-3">اطلاعات تحویل سفارش</h4>
+    <form method="post">
+      {% csrf_token %}
+      <div class="mb-3">
+        <label class="form-label">آدرس تحویل</label>
+        {{ form.address }}
+      </div>
+      <div class="mb-3">
+        <label class="form-label">بازه زمانی تحویل</label>
+        {{ form.delivery_time }}
+      </div>
+      <button type="submit" class="btn btn-success">ثبت سفارش و رفتن به پرداخت</button>
+    </form>
+  </div>
+  <div class="col-md-5">
+    <div class="card p-3">
+      <h6>خلاصه سبد خرید</h6>
+      {% for item in items %}
+        <div class="d-flex justify-content-between small mb-1">
+          <span>{{ item.product.name }} × {{ item.quantity }}</span>
+          <span>{{ item.subtotal }} تومان</span>
+        </div>
+      {% endfor %}
+      <hr>
+      <div class="d-flex justify-content-between fw-bold">
+        <span>جمع کل</span>
+        <span>{{ cart_total }} تومان</span>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

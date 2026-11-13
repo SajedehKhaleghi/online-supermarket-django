@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block title %}سبد خرید{% endblock %}
+{% block content %}
+<h4 class="mb-4">سبد خرید شما</h4>
+{% if items %}
+  <table class="table bg-white">
+    <thead><tr><th>محصول</th><th>قیمت واحد</th><th>تعداد</th><th>جمع</th><th></th></tr></thead>
+    <tbody>
+    {% for item in items %}
+      <tr>
+        <td>
+          {{ item.product.name }}
+          {% for pid, text in problems.items %}{% if pid == item.id %}<div class="text-danger small">{{ text }}</div>{% endif %}{% endfor %}
+        </td>
+        <td>{{ item.product.final_price }} تومان</td>
+        <td>
+          <form method="post" action="{% url 'orders:cart_update' item.id %}" class="d-flex gap-1">
+            {% csrf_token %}
+            <input type="number" name="quantity" value="{{ item.quantity }}" min="0" max="{{ item.product.stock }}" class="form-control form-control-sm" style="width:70px">
+            <button type="submit" class="btn btn-sm btn-outline-secondary">بروزرسانی</button>
+          </form>
+        </td>
+        <td>{{ item.subtotal }} تومان</td>
+        <td>
+          <form method="post" action="{% url 'orders:cart_remove' item.id %}">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-sm btn-outline-danger">حذف</button>
+          </form>
+        </td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  <div class="text-end">
+    <h5>جمع کل: {{ cart_total }} تومان</h5>
+    {% if has_problems %}
+      <p class="text-danger small">ابتدا مشکلات بالا را برطرف کنید (تعداد را کم یا محصول را حذف کنید).</p>
+      <button class="btn btn-success" disabled>ادامه فرآیند خرید</button>
+    {% else %}
+      <a href="{% url 'orders:checkout' %}" class="btn btn-success">ادامه فرآیند خرید</a>
+    {% endif %}
+  </div>
+{% else %}
+  <p class="text-muted">سبد خرید شما خالی است.</p>
+  <a href="{% url 'products:product_list' %}" class="btn btn-success">مشاهده محصولات</a>
+{% endif %}
+{% endblock %}

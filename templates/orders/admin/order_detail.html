@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}مدیریت سفارش #{{ order.id }}{% endblock %}
+{% block content %}
+<h4 class="mb-3">سفارش #{{ order.id }} — {{ order.user.username }}</h4>
+
+<p><strong>وضعیت پرداخت:</strong> {{ order.payment.get_status_display }}{% if order.payment.transaction_id %} (کد رهگیری: {{ order.payment.transaction_id }}){% endif %}</p>
+<p><strong>آدرس:</strong> {{ order.address }}</p>
+<p><strong>بازه تحویل:</strong> {{ order.delivery_time }}</p>
+
+<table class="table bg-white">
+  <thead><tr><th>محصول</th><th>قیمت واحد</th><th>تعداد</th><th>جمع</th></tr></thead>
+  <tbody>
+  {% for item in order.items.all %}
+    <tr>
+      <td>{{ item.product_name }}</td>
+      <td>{{ item.price }} تومان</td>
+      <td>{{ item.quantity }}</td>
+      <td>{{ item.subtotal }} تومان</td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+<h5 class="text-end mb-4">جمع کل: {{ order.total_price }} تومان</h5>
+
+<div class="card p-3" style="max-width: 400px;">
+  <h6>تغییر وضعیت سفارش</h6>
+  <form method="post">
+    {% csrf_token %}
+    {{ form.status }}
+    <button type="submit" class="btn btn-success mt-3 w-100">بروزرسانی وضعیت</button>
+  </form>
+</div>
+
+<a href="{% url 'orders:admin_order_list' %}" class="btn btn-outline-secondary mt-3">بازگشت به لیست سفارش‌ها</a>
+{% endblock %}

@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+{% load static %}
+{% load product_extras %}
+{% block title %}مقایسه محصولات{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h4>مقایسه محصولات</h4>
+  {% if products %}
+    <form method="post" action="{% url 'products:compare_clear' %}">
+      {% csrf_token %}
+      <button type="submit" class="btn btn-sm btn-outline-danger">پاک کردن همه</button>
+    </form>
+  {% endif %}
+</div>
+
+{% if products %}
+<div class="table-responsive">
+  <table class="table table-bordered bg-white align-middle text-center">
+    <thead>
+      <tr>
+        <th class="text-start" style="width:160px;">مشخصات</th>
+        {% for p in products %}
+          <th style="min-width:200px;">
+            {% if p.image %}
+              <img src="{{ p.image.url }}" class="img-fluid mb-2" style="max-height:120px;object-fit:cover;">
+            {% else %}
+              <img src="{% static 'img/no-image.svg' %}" class="img-fluid mb-2" alt="{{ p.name }}">
+            {% endif %}
+            <div><a href="{{ p.get_absolute_url }}" class="fw-bold text-decoration-none">{{ p.name }}</a></div>
+            <form method="post" action="{% url 'products:compare_remove' p.id %}">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-sm btn-outline-secondary mt-1">حذف از مقایسه</button>
+            </form>
+          </th>
+        {% endfor %}
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <th class="text-start">دسته‌بندی</th>
+        {% for p in products %}<td>{{ p.category.name }}</td>{% endfor %}
+      </tr>
+      <tr>
+        <th class="text-start">برند</th>
+        {% for p in products %}<td>{{ p.brand|default:"—" }}</td>{% endfor %}
+      </tr>
+      <tr>
+        <th class="text-start">قیمت</th>
+        {% for p in products %}
+          <td>
+            {% if p.discount_percent %}<span class="price-old">{{ p.price }} تومان</span><br>{% endif %}
+            <span class="price-final">{{ p.final_price }} تومان</span>
+          </td>
+        {% endfor %}
+      </tr>
+      <tr>
+        <th class="text-start">واحد فروش</th>
+        {% for p in products %}<td>{{ p.get_unit_display }}</td>{% endfor %}
+      </tr>
+      <tr>
+        <th class="text-start">امتیاز</th>
+        {% for p in products %}
+          <td>{% if p.average_rating %}<span class="rating-stars">★ {{ p.average_rating }}</span> ({{ p.review_count }}){% else %}—{% endif %}</td>
+        {% endfor %}
+      </tr>
+      <tr>
+        <th class="text-start">موجودی</th>
+        {% for p in products %}
+          <td>{% if p.in_stock %}<span class="text-success">{{ p.stock }} موجود</span>{% else %}<span class="text-danger">ناموجود</span>{% endif %}</td>
+        {% endfor %}
+      </tr>
+
+      {% for key in feature_keys %}
+        <tr>
+          <th class="text-start">{{ key }}</th>
+          {% for p in products %}
+            <td>{{ p.feature_map|get_item:key|default:"—" }}</td>
+          {% endfor %}
+        </tr>
+      {% endfor %}
+
+      <tr>
+        <th class="text-start">افزودن به سبد خرید</th>
+        {% for p in products %}
+          <td>
+            {% if p.in_stock %}
+              <form method="post" action="{% url 'orders:cart_add' p.id %}">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-success btn-sm">افزودن</button>
+              </form>
+            {% else %}
+              <button class="btn btn-secondary btn-sm" disabled>ناموجود</button>
+            {% endif %}
+          </td>
+        {% endfor %}
+      </tr>
+    </tbody>
+  </table>
+</div>
+{% else %}
+  <p class="text-muted">هنوز محصولی برای مقایسه انتخاب نکرده‌اید. از صفحه محصولات، دکمه «افزودن به مقایسه» را بزنید (حداکثر {{ max_items }} محصول).</p>
+  <a href="{% url 'products:product_list' %}" class="btn btn-success">مشاهده محصولات</a>
+{% endif %}
+{% endblock %}
